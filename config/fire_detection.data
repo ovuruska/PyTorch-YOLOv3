@@ -1,0 +1,4 @@
+classes= 1
+train=data/fire_data/train.txt
+valid=data/fire_data/valid.txt
+names=data/fire_data/classes.names

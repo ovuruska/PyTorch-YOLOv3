@@ -13,3 +13,5 @@ checkpoints
 
 .vscode/
 logs/
+.idea
+.data

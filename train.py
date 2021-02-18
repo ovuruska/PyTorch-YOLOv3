@@ -1,5 +1,7 @@
 from __future__ import division
 
+import cv2
+
 from models import *
 from utils.logger import *
 from utils.utils import *
