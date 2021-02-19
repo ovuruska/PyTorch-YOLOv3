@@ -56,7 +56,8 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
             outputs = non_max_suppression(outputs, conf_thres=conf_thres, nms_thres=nms_thres)
 
         sample_metrics += get_batch_statistics(outputs, targets, iou_threshold=iou_thres)
-    
+
+
     if len(sample_metrics) == 0:  # no detections over whole validation set.
         return None
     
@@ -70,13 +71,13 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", type=int, default=8, help="size of each image batch")
-    parser.add_argument("--model_def", type=str, default="config/yolov3.cfg", help="path to model definition file")
-    parser.add_argument("--data_config", type=str, default="config/coco.data", help="path to data config file")
-    parser.add_argument("--weights_path", type=str, default="weights/yolov3.weights", help="path to weights file")
-    parser.add_argument("--class_path", type=str, default="data/coco.names", help="path to class label file")
+    parser.add_argument("--model_def", type=str, default="config/meine_yolov3.cfg", help="path to model definition file")
+    parser.add_argument("--data_config", type=str, default="config/fire_detection.data", help="path to data config file")
+    parser.add_argument("--weights_path", type=str, default="checkpoints/yolov3_mAP46.pth", help="path to weights file")
+    parser.add_argument("--class_path", type=str, default="data/fire_data/classes.names", help="path to class label file")
     parser.add_argument("--iou_thres", type=float, default=0.5, help="iou threshold required to qualify as detected")
     parser.add_argument("--conf_thres", type=float, default=0.5, help="object confidence threshold")
-    parser.add_argument("--nms_thres", type=float, default=0.5, help="iou thresshold for non-maximum suppression")
+    parser.add_argument("--nms_thres", type=float, default=0.5, help="iou threshold for non-maximum suppression")
     parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
     parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
     opt = parser.parse_args()
@@ -98,6 +99,9 @@ if __name__ == "__main__":
         model.load_state_dict(torch.load(opt.weights_path))
 
     print("Compute mAP...")
+
+    
+
 
     precision, recall, AP, f1, ap_class = evaluate(
         model,

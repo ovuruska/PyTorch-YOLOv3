@@ -6,13 +6,13 @@ import os
 if __name__ == "__main__":
 
 
-    # train_root = os.path.join("data","fire_detection", "train")
-    # val_root = os.path.join("data","fire_detection", "val")
-    #
-    # train_writer = Yolov1TxtWriter(train_root,os.path.join("train_yolo.txt"))
-    # train_writer.write()
-    # val_writer = Yolov1TxtWriter(val_root,os.path.join("val_yolo.txt"))
-    # val_writer.write()
+    train_root = os.path.join("data","fire_detection", "train")
+    val_root = os.path.join("data","fire_detection", "val")
+
+    train_writer = Yolov1TxtWriter(train_root,os.path.join("train_yolo.txt"))
+    train_writer.write()
+    val_writer = Yolov1TxtWriter(val_root,os.path.join("val_yolo.txt"))
+    val_writer.write()
 
 
     images_root = os.path.join("data","fire_data", "images")

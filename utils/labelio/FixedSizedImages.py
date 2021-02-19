@@ -2,6 +2,8 @@ import cv2
 import os
 import numpy as np
 
+from utils.labelio.ImageScaler import ImageScaler
+
 
 class FixedSizedImages():
 
@@ -43,48 +45,10 @@ class FixedSizedImages():
     def __init__(self,txt,width = 512,height = 384,filter_classes = None):
 
         self.filenames,self.annotations = self.read_text_file(txt,filter_classes)
-        self.height = height
-        self.width = width
-
-
-    def get_scale_ratio(self,img):
-        height_ratio = img.shape[0] / self.height
-        width_ratio = img.shape[1] / self.width
-
-        max_ratio = max(height_ratio, width_ratio)
-        return max_ratio
+        self.scaler = ImageScaler(width=width,height=height)
 
 
 
-
-
-    def scale_img(self,img,img_annotations):
-
-        ratio = self.get_scale_ratio(img)
-
-        new_img = np.zeros((self.height,self.width,3)).astype(np.uint8)
-        img = cv2.resize(img, (int(img.shape[1] // ratio), int(img.shape[0] // ratio)))
-
-        x_offset = (self.width - img.shape[1])
-        y_offset = (self.height - img.shape[0])
-
-        left_offset = x_offset // 2 + x_offset % 2
-        top_offset = y_offset // 2 + y_offset % 2
-
-        new_img[top_offset:top_offset+img.shape[0],left_offset:left_offset+img.shape[1],:] = img
-
-        ret_annotations = [
-            [
-                anno[4],
-                int((anno[0]/ratio)+left_offset)/self.width,
-                int((anno[1]/ratio)+top_offset)/self.height,
-                int((anno[2]/ratio))/self.width,
-                int((anno[3]/ratio))/self.height,
-            ]
-            for anno in img_annotations
-        ]
-
-        return new_img,ret_annotations
 
     def write_dataset(self,images_root,labels_root,image_list_path):
 
@@ -92,7 +56,7 @@ class FixedSizedImages():
         with open(image_list_path,"w") as image_list_fp:
             for filepath,img_annotations in zip(self.filenames,self.annotations):
                 img = cv2.imread(filepath)
-                img,img_annotations = self.scale_img(img,img_annotations)
+                img,img_annotations = self.scaler.scale_img(img,img_annotations)
 
                 image_write_path = os.path.join(images_root,os.path.basename(filepath))
                 cv2.imwrite(image_write_path,img)
