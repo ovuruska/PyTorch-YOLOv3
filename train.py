@@ -27,6 +27,8 @@ from torchvision import transforms
 from torch.autograd import Variable
 import torch.optim as optim
 
+from good_guys.loss import EarlyStopping
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -83,6 +85,8 @@ if __name__ == "__main__":
     )
 
     optimizer = torch.optim.Adam(model.parameters())
+    plateau_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,patience =3,verbose=True,threshold_mode="abs" )
+
 
     metrics = [
         "grid_size",
@@ -104,6 +108,9 @@ if __name__ == "__main__":
     for epoch in range(opt.epochs):
         model.train()
         start_time = time.time()
+
+        epoch_loss = 0
+
         for batch_i, (_, imgs, targets) in enumerate(tqdm.tqdm(dataloader, desc=f"Training Epoch {epoch}")):
             batches_done = len(dataloader) * epoch + batch_i
 
@@ -111,6 +118,7 @@ if __name__ == "__main__":
             targets = Variable(targets.to(device), requires_grad=False)
 
             loss, outputs = model(imgs, targets)
+            epoch_loss += loss.item()
             loss.backward()
 
             if batches_done % opt.gradient_accumulations == 0:
@@ -154,6 +162,8 @@ if __name__ == "__main__":
             if opt.verbose: print(log_str)
 
             model.seen += imgs.size(0)
+
+        plateau_scheduler.step(epoch_loss)
 
         if epoch % opt.evaluation_interval == 0:
             print("\n---- Evaluating Model ----")
