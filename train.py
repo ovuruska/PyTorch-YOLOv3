@@ -179,11 +179,15 @@ if __name__ == "__main__":
                 logger.list_of_scalars_summary(evaluation_metrics, epoch)
 
                 # Print class APs and mAP
-                ap_table = [["Index", "Class name", "AP"]]
+                metric_table = [["Index", "Class name", "AP","recall","precision","f1"]]
                 for i, c in enumerate(ap_class):
-                    ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
-                print(AsciiTable(ap_table).table)
-                print(f"---- mAP {AP.mean()}")                
+                    metric_table += [[c, class_names[c], "%.5f" % AP[i], "%.5f" % recall[i], "%.5f" % precision[i], "%.5f" % f1[i]]]
+                print(AsciiTable(metric_table).table)
+
+                if len(ap_class) != 1:
+                    print(f"---- mAP {AP.mean()}")
+
+
             else:
                 print( "---- mAP not measured (no detections found by model)")
 
